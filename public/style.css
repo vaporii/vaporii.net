@@ -26,16 +26,19 @@ layout {
   --bg: #282828;
   --panel-bg: #1d2021;
   --text: #ebdbb2;
-  --muted-text: #A89984;
+  --muted-text: #a89984;
+  --dark-text: #d5c4a1;
   --module-border: #504945;
   --module-title: #665c54;
   --link: #458588;
   --link-visited: #b16286;
   --font: "JetBrains Mono Variable", monospace;
-  --font-size: 18px;
+  --font-size: 16px;
   --header-font-size: 20px;
+  --larger-font-size: 18px;
   --module-size: 2px;
 
+  --page-max-width: 825px;
   --small-padding: 10px;
   --padding: 15px;
 }
@@ -49,15 +52,18 @@ body {
 
 #app {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(6, 1fr);
   gap: var(--padding);
   box-sizing: border-box;
 
   background-color: var(--panel-bg);
 
+  max-width: var(--page-max-width);
   padding: var(--padding);
   /* doesn't look right without this */
   padding-top: 5px;
+  /* center */
+  margin: auto;
 }
 
 fieldset {
@@ -72,7 +78,7 @@ fieldset {
 legend {
   color: var(--module-title);
   font-weight: bold;
-  font-size: var(--font-size);
+  font-size: var(--larger-font-size);
 
   padding: 0 var(--small-padding);
   /* title doesn't quite align without this */
@@ -81,8 +87,20 @@ legend {
 
 h1 {
   font-size: var(--header-font-size);
+
   margin: 0;
   margin-bottom: var(--padding);
+}
+
+h2 {
+  font-size: var(--larger-font-size);
+
+  margin: 0;
+  margin-bottom: var(--padding);
+}
+
+h3 {
+  font-size: var(--font-size);
 }
 
 p {
@@ -95,6 +113,12 @@ a {
 
 a:visited {
   color: var(--link-visited);
+}
+
+hr {
+  color: var(--module-title);
+  /* border-width: var(--module-size); */
+  border-style: solid;
 }
 
 /* utility helpers */
@@ -114,6 +138,10 @@ a:visited {
   flex: 1 1 0px;
 }
 
+.grid-column-span-full {
+  grid-column: span 6;
+}
+
 .gap {
   gap: var(--padding);
 }
@@ -122,7 +150,10 @@ a:visited {
   color: var(--muted-text);
 }
 
-/* targeted */
-fieldset:first-of-type {
-  grid-column: span 2;
+.dark {
+  color: var(--dark-text);
+}
+
+.margin-none {
+  margin: 0;
 }

@@ -8,7 +8,7 @@
   </head>
   <body>
     <div id="app">
-      <fieldset>
+      <fieldset class="grid-column-span-full">
         <legend>content</legend>
         <h1>hi!! i'm vaporii :3</h1>
         <p>ummm i can't think of a bio</p>
@@ -37,12 +37,19 @@
           </fieldset>
         </div>
       </fieldset>
-      <fieldset>
-        <legend>status</legend>
-      </fieldset>
-      <fieldset>
-        <legend>live chat</legend>
-      </fieldset>
+      <div class="grid-column-span-full flex flex-row flex-grow-children gap">
+        <fieldset>
+          <legend>status</legend>
+          <h2>vaporii is currently...</h2>
+          <h2 class="dark margin-none"><!-- current status text -->doing something</h2>
+          <h3 class="muted margin-none">mar 6, 11:48 am</h3>
+          <hr>
+        </fieldset>
+        <fieldset>
+          <legend>live chat</legend>
+          <iframe src="/status" frameborder="0"></iframe>
+        </fieldset>
+      </div>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
