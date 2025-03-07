@@ -1,7 +1,80 @@
+/* jetbrains-mono-latin-wght-normal */
+@font-face {
+  font-family: "JetBrains Mono Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 800;
+  src: url(@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2)
+    format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* 
+layout {
+  display/layout
+  display/layout config
+
+  color
+  font
+  border
+  other
+
+  size
+  padding
+  margin
+  other
+
+  other
+}
+*/
+
 :root {
   --bg: #282828;
+  --panel-bg: #1d2021;
+  --text: #ebdbb2;
+  --font: "JetBrains Mono Variable", monospace;
+  --font-size: 18px;
+  --module-border: #504945;
+  --module-title: #665C54;
+  --module-size: 2px;
+  
+  --small-padding: 10px;
+  --padding: 15px;
 }
 
 body {
   background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+}
+
+#app {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--padding);
+
+  background-color: var(--panel-bg);
+
+  padding: var(--padding);
+  /* doesn't look right without this */
+  padding-top: 5px;
+}
+
+fieldset {
+  background-color: var(--panel-bg);
+  border: var(--module-size) solid var(--module-border);
+
+  margin: 0;
+}
+
+legend {
+  color: var(--module-title);
+  font-weight: bold;
+  font-size: var(--font-size);
+
+  padding: 0 var(--small-padding);
+  /* title doesn't quite align without this */
+  padding-bottom: 3px;
 }

@@ -11,5 +11,8 @@
   "devDependencies": {
     "typescript": "~5.7.2",
     "vite": "^6.2.0"
+  },
+  "dependencies": {
+    "@fontsource-variable/jetbrains-mono": "^5.2.5"
   }
 }
