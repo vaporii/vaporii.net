@@ -26,16 +26,21 @@ layout {
   --bg: #282828;
   --panel-bg: #1d2021;
   --text: #ebdbb2;
-  --font: "JetBrains Mono Variable", monospace;
-  --font-size: 18px;
+  --muted-text: #A89984;
   --module-border: #504945;
   --module-title: #665c54;
+  --link: #458588;
+  --link-visited: #b16286;
+  --font: "JetBrains Mono Variable", monospace;
+  --font-size: 18px;
+  --header-font-size: 20px;
   --module-size: 2px;
 
   --small-padding: 10px;
   --padding: 15px;
 }
 
+/* generic */
 body {
   background-color: var(--bg);
   color: var(--text);
@@ -46,6 +51,7 @@ body {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--padding);
+  box-sizing: border-box;
 
   background-color: var(--panel-bg);
 
@@ -59,6 +65,8 @@ fieldset {
   border: var(--module-size) solid var(--module-border);
 
   margin: 0;
+  padding: var(--padding);
+  padding-top: 0;
 }
 
 legend {
@@ -69,4 +77,52 @@ legend {
   padding: 0 var(--small-padding);
   /* title doesn't quite align without this */
   padding-bottom: 3px;
+}
+
+h1 {
+  font-size: var(--header-font-size);
+  margin: 0;
+  margin-bottom: var(--padding);
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--link);
+}
+
+a:visited {
+  color: var(--link-visited);
+}
+
+/* utility helpers */
+.flex {
+  display: flex;
+}
+
+.flex-row {
+  flex-direction: row;
+}
+
+.flex-grow-children > * {
+  flex-grow: 1;
+}
+
+.flex-equal-children > * {
+  flex: 1 1 0px;
+}
+
+.gap {
+  gap: var(--padding);
+}
+
+.muted {
+  color: var(--muted-text);
+}
+
+/* targeted */
+fieldset:first-of-type {
+  grid-column: span 2;
 }
