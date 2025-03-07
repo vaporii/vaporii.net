@@ -29,7 +29,12 @@
           <fieldset>
             <legend>the</legend>
             <!-- reviews -->
-            <div class="muted">have something "interesting" to "say"? msg "me" "on" discord <a href="https://discord.com/users/1130296369928753183">@vaporii</a></div>
+            <div class="muted">
+              have something "interesting" to "say"? msg "me" "on" discord
+              <a href="https://discord.com/users/1130296369928753183"
+                >@vaporii</a
+              >
+            </div>
           </fieldset>
           <fieldset>
             <legend>files</legend>
@@ -41,16 +46,22 @@
         <fieldset>
           <legend>status</legend>
           <h2>vaporii is currently...</h2>
-          <h2 class="dark margin-none"><!-- current status text -->doing something</h2>
+          <h2 class="dark margin-none">
+            <!-- current status text -->doing something
+          </h2>
           <h3 class="muted margin-none">mar 6, 11:48 am</h3>
-          <hr>
+          <hr />
         </fieldset>
-        <fieldset>
+        <fieldset class="position-relative overflow-hidden">
           <legend>live chat</legend>
-          <iframe src="/status" frameborder="0"></iframe>
+          <iframe
+            src="/status"
+            frameborder="0"
+            loading="lazy"
+            class="iframe-hack"
+          ></iframe>
         </fieldset>
       </div>
     </div>
-    <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

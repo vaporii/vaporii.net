@@ -157,3 +157,30 @@ hr {
 .margin-none {
   margin: 0;
 }
+
+.position-relative {
+  position: relative;
+}
+
+.overflow-hidden {
+  overflow: hidden;
+}
+
+/* other stuff */
+
+.iframe-hack {
+  animation: iframe-hack 2s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes iframe-hack {
+  from {
+    position: absolute;
+    top: 1000000px;
+    left: 1000000px;
+  }
+
+  to {
+    position: static;
+  }
+}

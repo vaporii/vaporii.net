@@ -25,14 +25,14 @@ func randomString(length int) string {
 }
 
 func liveHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "multipart/x-mixed-replace; boundary=boundary")
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.Header().Set("Cache-Control", "no-cache")
+	// w.Header().Set("X-Content-Type-Options", "nosniff")
+	// w.Header().Set("Transfer-Encoding", "chunked")
+	// w.Header().Set("Connection", "keep-alive")
 
 	for {
-		fmt.Fprintf(w, "--boundary\r\n")
-		fmt.Fprintf(w, "Content-Type: text/html\r\n\r\n")
-
 		fmt.Fprintf(w, "<p>%s</p>\r\n", randomString(10))
-
 		w.(http.Flusher).Flush()
 		time.Sleep(time.Second)
 	}
