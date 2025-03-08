@@ -133,6 +133,14 @@ hr {
   flex-direction: row;
 }
 
+.flex-column {
+  flex-direction: column;
+}
+
+.flex-grow {
+  flex-grow: 1;
+}
+
 .flex-grow-children > * {
   flex-grow: 1;
 }
@@ -165,6 +173,18 @@ hr {
   margin: 0;
 }
 
+.padding-none {
+  padding: 0;
+}
+
+.margin {
+  margin: var(--padding);
+}
+
+.margin-l {
+  margin-left: var(--padding);
+}
+
 .position-relative {
   position: relative;
 }
@@ -173,10 +193,30 @@ hr {
   overflow: hidden;
 }
 
+.padding-lr {
+  padding: 0 var(--padding);
+}
+
+.padding {
+  padding: var(--padding);
+}
+
+.width-min-content {
+  width: min-content;
+}
+
+.width-full {
+  width: 100%;
+}
+
+.border-box {
+  box-sizing: border-box;
+}
+
 /* other stuff */
 
 .iframe-hack {
-  animation: iframe-hack 2s;
+  animation: iframe-hack 4s;
   animation-fill-mode: forwards;
 }
 
@@ -190,4 +230,10 @@ hr {
   to {
     position: static;
   }
+}
+
+.off-screen {
+  position: absolute;
+  top: 10000000px;
+  left: 10000000px;
 }

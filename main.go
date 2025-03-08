@@ -97,7 +97,13 @@ func liveChat(w http.ResponseWriter, r *http.Request) {
 		clientsMu.Unlock()
 	}()
 
-	fmt.Fprintf(w, "<!doctype html><head><link rel='stylesheet' href='/style.css' /></head><html><body class='transparent-bg'>\r\n")
+	broadcast(Message{
+		Color:    "#FFFFFF",
+		Username: "admin",
+		Message:  "someone joined!",
+	})
+
+	fmt.Fprintf(w, "<!doctype html><html><head><link rel='stylesheet' href='/style.css' /></head><body class='transparent-bg'>\r\n")
 	w.(http.Flusher).Flush()
 
 	tmpl, err := template.ParseFiles("./templates/message.html")
@@ -154,9 +160,15 @@ func handleChatSubmit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	message := r.FormValue("message")
+	if len(message) > 200 {
+		http.Error(w, "message too large", http.StatusBadRequest)
+		return
+	}
+
 	broadcast(Message{
-		Message:  "this is a test message",
-		Color:    "#FFFFFF",
+		Message:  message,
+		Color:    "#689D6A",
 		Username: username,
 	})
 }

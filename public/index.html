@@ -52,15 +52,29 @@
           <h3 class="muted margin-none">mar 6, 11:48 am</h3>
           <hr />
         </fieldset>
-        <fieldset class="position-relative overflow-hidden">
-          <legend>live chat</legend>
+        <fieldset class="position-relative overflow-hidden flex flex-column padding-none">
+          <legend class="margin-l">live chat</legend>
           <iframe
             src="/chat"
             frameborder="0"
             loading="lazy"
             width="100%"
             height="100%"
-            class="iframe-hack"
+            class="iframe-hack padding-lr border-box"
+          ></iframe>
+          <form action="/chat" method="post" target="hack" class="flex width-full">
+            <input type="text" name="message" id="message" class="flex-grow">
+            <!-- <input type="submit" value="send" class="padding-lr width-min-content" /> -->
+             <button type="submit" type="reset">send</button>
+          </form>
+          <iframe
+            src=""
+            frameborder="0"
+            name="hack"
+            loading="lazy"
+            class="off-screen"
+            width="0"
+            height="0"
           ></iframe>
         </fieldset>
       </div>
