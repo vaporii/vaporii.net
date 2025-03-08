@@ -48,6 +48,8 @@ body {
   background-color: var(--bg);
   color: var(--text);
   font-family: var(--font);
+
+  margin: 0;
 }
 
 #app {
@@ -64,6 +66,7 @@ body {
   padding-top: 5px;
   /* center */
   margin: auto;
+  margin-top: var(--padding);
 }
 
 fieldset {
@@ -152,6 +155,10 @@ hr {
 
 .dark {
   color: var(--dark-text);
+}
+
+.transparent-bg {
+  background-color: transparent;
 }
 
 .margin-none {
