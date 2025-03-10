@@ -169,6 +169,59 @@ func liveChat(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func getToken(tokenStr string) (*User, error) {
+	token, err := jwt.Parse(tokenStr, func(t *jwt.Token) (interface{}, error) {
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
+		}
+
+		return secretKey, nil
+	})
+	if err != nil {
+		return nil, fmt.Errorf("invalid token")
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return nil, fmt.Errorf("invalid token")
+	}
+
+	user := &User{
+		Username: claims["username"].(string),
+		Color:    claims["color"].(string),
+		UserID:   claims["id"].(string),
+	}
+
+	return user, nil
+}
+
+func setToken(user *User, w http.ResponseWriter) error {
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"username": user.Username,
+		"color":    user.Color,
+		"id":       user.UserID,
+	})
+
+	tokenString, err := token.SignedString(secretKey)
+	if err != nil {
+		return errors.New("failed to sign key: " + err.Error())
+	}
+
+	cookie := &http.Cookie{
+		Name:     "token",
+		Value:    tokenString,
+		HttpOnly: true,
+		Secure:   false, // make this secure later
+		Path:     "/",
+		MaxAge:   0,
+	}
+
+	http.SetCookie(w, cookie)
+
+	return nil
+}
+
 func getUser(w http.ResponseWriter, r *http.Request) (*User, error) {
 	cookie, err := r.Cookie("token")
 	var user *User
@@ -179,49 +232,16 @@ func getUser(w http.ResponseWriter, r *http.Request) (*User, error) {
 			Username: "guest_" + randomString(4),
 		}
 
-		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-			"username": user.Username,
-			"color":    user.Color,
-			"id":       user.UserID,
-		})
-
-		tokenString, err := token.SignedString(secretKey)
+		err = setToken(user, w)
 		if err != nil {
-			return nil, errors.New("failed to sign key: " + err.Error())
+			return nil, err
 		}
-
-		cookie = &http.Cookie{
-			Name:     "token",
-			Value:    tokenString,
-			HttpOnly: true,
-			Secure:   false, // make this secure later
-			Path:     "/",
-			MaxAge:   0,
-		}
-
-		http.SetCookie(w, cookie)
 	} else {
-		token, err := jwt.Parse(cookie.Value, func(t *jwt.Token) (interface{}, error) {
-			if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
-				return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
-			}
-
-			return secretKey, nil
-		})
+		newUser, err := getToken(cookie.Value)
 		if err != nil {
-			return nil, fmt.Errorf("invalid token")
+			return nil, err
 		}
-
-		claims, ok := token.Claims.(jwt.MapClaims)
-		if !ok {
-			return nil, fmt.Errorf("invalid token")
-		}
-
-		user = &User{
-			Username: claims["username"].(string),
-			Color:    claims["color"].(string),
-			UserID:   claims["id"].(string),
-		}
+		user = newUser
 	}
 
 	// excellent
@@ -289,6 +309,11 @@ func handleChatSubmit(w http.ResponseWriter, r *http.Request) {
 			}
 
 			users[user.UserID].Username = newUsername
+			err = setToken(users[user.UserID], w)
+			if err != nil {
+				sendLocalMessage(user.UserID, "error changing username")
+				return
+			}
 
 			sendLocalMessage(user.UserID, "username set to "+newUsername)
 		}
