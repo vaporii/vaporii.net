@@ -2,7 +2,7 @@ package main
 
 import (
 	"crypto/hmac"
-	"crypto/rand"
+	cryptoRand "crypto/rand"
 	"crypto/sha256"
 	"encoding/base64"
 	"errors"
@@ -10,6 +10,7 @@ import (
 	"html/template"
 	"log"
 	"math/big"
+	"math/rand"
 	"net/http"
 	"os"
 	"strings"
@@ -27,6 +28,8 @@ var (
 	users     = make(map[string]*User) // map user ids to users
 	usersMu   sync.Mutex
 )
+
+var colors = [...]string{"#CC241D", "#98971A", "#D79921", "#458588", "#B16286", "#689D6A", "#D65D0E", "#FB4934", "#B8BB26", "#FABD2F", "#83A598", "#D3869B", "#8EC07C", "#FE8019"}
 
 type User struct {
 	Color    string
@@ -50,7 +53,7 @@ func randomString(length int) string {
 	result := make([]byte, length)
 
 	for i := range result {
-		n, err := rand.Int(rand.Reader, big.NewInt(int64(len(charset))))
+		n, err := cryptoRand.Int(cryptoRand.Reader, big.NewInt(int64(len(charset))))
 		if err != nil {
 			log.Fatal("random string failed???")
 			return ""
@@ -209,7 +212,7 @@ func getCookie(w http.ResponseWriter, r *http.Request) (*http.Cookie, error) {
 			Name:     "user_id",
 			Value:    signed,
 			HttpOnly: true,
-			Secure:   true,
+			Secure:   false,
 			Path:     "/",
 			MaxAge:   0,
 		}
@@ -226,7 +229,7 @@ func getCookie(w http.ResponseWriter, r *http.Request) (*http.Cookie, error) {
 			Name:     "username",
 			Value:    signed,
 			HttpOnly: true,
-			Secure:   true,
+			Secure:   false,
 			Path:     "/",
 			MaxAge:   0,
 		}
@@ -253,7 +256,7 @@ func getCookie(w http.ResponseWriter, r *http.Request) (*http.Cookie, error) {
 	_, ok := users[rawUserID]
 	if !ok {
 		users[rawUserID] = &User{
-			Color:    "#AAAAAA", // default value? make random eventually
+			Color:    colors[rand.Intn(len(colors))],
 			UserID:   rawUserID,
 			Username: username,
 		}
