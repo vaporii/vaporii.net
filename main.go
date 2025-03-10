@@ -316,6 +316,7 @@ func handleChatSubmit(w http.ResponseWriter, r *http.Request) {
 			}
 			if len(newUsername) < 4 {
 				sendLocalMessage(userID, "username too short (must be 3-16 chars)")
+				return
 			}
 
 			users[userID].Username = newUsername
