@@ -16,6 +16,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/joho/godotenv"
 	// "html/template"
 )
@@ -203,48 +204,58 @@ func liveChat(w http.ResponseWriter, r *http.Request) {
 }
 
 func getCookie(w http.ResponseWriter, r *http.Request) (*http.Cookie, error) {
-	cookie, err := r.Cookie("user_id")
+	cookie, err := r.Cookie("token")
+	var user *User
 	if err != nil {
-		userID := randomString(20)
-		signed := signUserID(userID)
+		user = &User{
+			Color:    colors[rand.Intn(len(colors))],
+			UserID:   "",
+			Username: "guest_" + randomString(4),
+		}
+
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+			"username": user.Username,
+			"color":    user.Color,
+			"id":       user.UserID,
+		})
+
+		tokenString, err := token.SignedString(secretKey)
+		if err != nil {
+			return nil, errors.New("failed to sign key: " + err.Error())
+		}
 
 		cookie = &http.Cookie{
-			Name:     "user_id",
-			Value:    signed,
+			Name:     "token",
+			Value:    tokenString,
 			HttpOnly: true,
-			Secure:   false,
+			Secure:   false, // make this secure later
 			Path:     "/",
 			MaxAge:   0,
 		}
 
 		http.SetCookie(w, cookie)
-	}
+	} else {
+		token, err := jwt.Parse(cookie.Value, func(t *jwt.Token) (interface{}, error) {
+			if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
+			}
 
-	usernameCookie, err := r.Cookie("username")
-	if err != nil {
-		username := "guest " + randomString(4)
-		signed := signUserID(username)
-
-		usernameCookie = &http.Cookie{
-			Name:     "username",
-			Value:    signed,
-			HttpOnly: true,
-			Secure:   false,
-			Path:     "/",
-			MaxAge:   0,
+			return secretKey, nil
+		})
+		if err != nil {
+			return nil, fmt.Errorf("invalid token")
 		}
 
-		http.SetCookie(w, usernameCookie)
-	}
+		claims, ok := token.Claims.(jwt.MapClaims)
+		if !ok {
+			return nil, fmt.Errorf("invalid token")
+		}
 
-	rawUserID, valid := verifyUserID(cookie.Value)
-	if !valid {
-		return nil, errors.New("invalid user id cookie")
-	}
-
-	username, valid := verifyUserID(usernameCookie.Value)
-	if !valid {
-		return nil, errors.New("invalid username cookie")
+		user = &User{
+			Username: claims["username"].(string),
+			Color:    claims["color"].(string),
+			UserID:   claims["id"].(string),
+		}
 	}
 
 	// excellent
@@ -253,13 +264,9 @@ func getCookie(w http.ResponseWriter, r *http.Request) (*http.Cookie, error) {
 	// same character length??
 
 	usersMu.Lock()
-	_, ok := users[rawUserID]
+	_, ok := users[user.UserID]
 	if !ok {
-		users[rawUserID] = &User{
-			Color:    colors[rand.Intn(len(colors))],
-			UserID:   rawUserID,
-			Username: username,
-		}
+		users[user.UserID] = user
 	}
 	usersMu.Unlock()
 
