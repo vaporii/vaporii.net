@@ -136,32 +136,26 @@ func liveChat(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.Header().Set("Cache-Control", "no-cache")
 
-	cookie, err := getCookie(w, r)
+	user, err := getUser(w, r)
 	if err != nil {
 		http.Error(w, "don't know what went wrong", http.StatusInternalServerError)
-		return
-	}
-
-	userID, valid := verifyUserID(cookie.Value)
-	if !valid {
-		http.Error(w, "invalid username sig", http.StatusUnauthorized)
 		return
 	}
 
 	clientChan := make(chan Message, 10)
 
 	clientsMu.Lock()
-	clients[userID] = clientChan
+	clients[user.UserID] = clientChan
 	clientsMu.Unlock()
 
 	defer func() {
 		clientsMu.Lock()
-		delete(clients, userID)
+		delete(clients, user.UserID)
 		clientsMu.Unlock()
 	}()
 
-	sendLocalMessage(userID, "hi!! please just have basic human decency")
-	sendLocalMessage(userID, "use /nick to change your username")
+	sendLocalMessage(user.UserID, "hi!! please just have basic human decency")
+	sendLocalMessage(user.UserID, "use /nick to change your username")
 
 	fmt.Fprintf(w, `
 	<!doctype html>
@@ -203,7 +197,7 @@ func liveChat(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func getCookie(w http.ResponseWriter, r *http.Request) (*http.Cookie, error) {
+func getUser(w http.ResponseWriter, r *http.Request) (*User, error) {
 	cookie, err := r.Cookie("token")
 	var user *User
 	if err != nil {
@@ -270,7 +264,7 @@ func getCookie(w http.ResponseWriter, r *http.Request) (*http.Cookie, error) {
 	}
 	usersMu.Unlock()
 
-	return cookie, nil
+	return user, nil
 }
 
 func sendLocalMessage(userID string, message string) {
@@ -281,15 +275,9 @@ func sendLocalMessage(userID string, message string) {
 }
 
 func handleChatSubmit(w http.ResponseWriter, r *http.Request) {
-	cookie, err := getCookie(w, r)
+	user, err := getUser(w, r)
 	if err != nil {
 		http.Error(w, "don't know what went wrong", http.StatusInternalServerError)
-		return
-	}
-
-	userID, valid := verifyUserID(cookie.Value)
-	if !valid {
-		http.Error(w, "invalid username sig", http.StatusUnauthorized)
 		return
 	}
 
@@ -301,12 +289,12 @@ func handleChatSubmit(w http.ResponseWriter, r *http.Request) {
 
 	message := r.FormValue("message")
 	if len(message) > 200 {
-		sendLocalMessage(userID, "message too large")
+		sendLocalMessage(user.UserID, "message too large")
 		return
 	}
 
 	if len(message) == 0 {
-		sendLocalMessage(userID, "message too small")
+		sendLocalMessage(user.UserID, "message too small")
 		return
 	}
 
@@ -318,20 +306,19 @@ func handleChatSubmit(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if args[0] == "/nick" {
-			// user := users[userID]
 			newUsername := strings.TrimSpace(strings.Join(args[1:], " "))
 			if len(newUsername) > 16 {
-				sendLocalMessage(userID, "username too long (must be 3-16 chars)")
+				sendLocalMessage(user.UserID, "username too long (must be 3-16 chars)")
 				return
 			}
-			if len(newUsername) < 4 {
-				sendLocalMessage(userID, "username too short (must be 3-16 chars)")
+			if len(newUsername) < 3 {
+				sendLocalMessage(user.UserID, "username too short (must be 3-16 chars)")
 				return
 			}
 
-			users[userID].Username = newUsername
+			users[user.UserID].Username = newUsername
 
-			sendLocalMessage(userID, "username set to "+newUsername)
+			sendLocalMessage(user.UserID, "username set to "+newUsername)
 		}
 
 		return
@@ -339,7 +326,7 @@ func handleChatSubmit(w http.ResponseWriter, r *http.Request) {
 
 	broadcast(Message{
 		Message: message,
-		UserID:  userID,
+		UserID:  user.UserID,
 	})
 }
 
