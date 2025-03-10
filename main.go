@@ -1,10 +1,7 @@
 package main
 
 import (
-	"crypto/hmac"
 	cryptoRand "crypto/rand"
-	"crypto/sha256"
-	"encoding/base64"
 	"errors"
 	"fmt"
 	"html/template"
@@ -87,31 +84,6 @@ func sendToUserID(userID string, msg Message) {
 		default:
 		}
 	}
-}
-
-func signUserID(username string) string {
-	sig := computeSignature(username)
-	return username + "|" + sig
-}
-
-func verifyUserID(signedValue string) (string, bool) {
-	parts := strings.Split(signedValue, "|")
-	if len(parts) != 2 {
-		return "", false
-	}
-	username, providedSig := parts[0], parts[1]
-	expectedSig := computeSignature(username)
-	if !hmac.Equal([]byte(providedSig), []byte(expectedSig)) {
-		return "", false
-	}
-
-	return username, true
-}
-
-func computeSignature(username string) string {
-	h := hmac.New(sha256.New, secretKey)
-	h.Write([]byte(username))
-	return base64.StdEncoding.EncodeToString(h.Sum(nil))
 }
 
 func transformMessage(message Message) (ClientMessage, error) {
