@@ -2,12 +2,14 @@ package main
 
 import (
 	"crypto/hmac"
+	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"html/template"
 	"log"
-	"math/rand"
+	"math/big"
 	"net/http"
 	"os"
 	"strings"
@@ -20,29 +22,50 @@ import (
 var secretKey []byte
 
 var (
-	clients   = make(map[chan Message]bool)
+	clients   = make(map[string]chan Message) // map user ids to channel
 	clientsMu sync.Mutex
+	users     = make(map[string]*User) // map user ids to users
+	usersMu   sync.Mutex
 )
 
-type Message struct {
+type User struct {
 	Color    string
+	UserID   string
 	Username string
+}
+
+type Message struct {
+	UserID  string
+	Message string
+}
+
+type ClientMessage struct {
+	Username string
+	Color    string
 	Message  string
 }
 
 func randomString(length int) string {
-	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
 	result := make([]byte, length)
+
 	for i := range result {
-		result[i] = charset[rand.Intn(len(charset))]
+		n, err := rand.Int(rand.Reader, big.NewInt(int64(len(charset))))
+		if err != nil {
+			log.Fatal("random string failed???")
+			return ""
+		}
+		result[i] = charset[n.Int64()]
 	}
+
 	return string(result)
 }
 
 func broadcast(msg Message) {
 	clientsMu.Lock()
 	defer clientsMu.Unlock()
-	for ch := range clients {
+
+	for _, ch := range clients {
 		select {
 		case ch <- msg:
 		default:
@@ -50,12 +73,24 @@ func broadcast(msg Message) {
 	}
 }
 
-func signUsername(username string) string {
+func sendToUserID(userID string, msg Message) {
+	clientsMu.Lock()
+	defer clientsMu.Unlock()
+
+	if ch, exists := clients[userID]; exists {
+		select {
+		case ch <- msg:
+		default:
+		}
+	}
+}
+
+func signUserID(username string) string {
 	sig := computeSignature(username)
 	return username + "|" + sig
 }
 
-func verifyUsername(signedValue string) (string, bool) {
+func verifyUserID(signedValue string) (string, bool) {
 	parts := strings.Split(signedValue, "|")
 	if len(parts) != 2 {
 		return "", false
@@ -75,35 +110,66 @@ func computeSignature(username string) string {
 	return base64.StdEncoding.EncodeToString(h.Sum(nil))
 }
 
+func transformMessage(message Message) (ClientMessage, error) {
+	user, ok := users[message.UserID]
+	if !ok {
+		return ClientMessage{
+			Username: "error",
+			Color:    "#FF0000",
+			Message:  "user not found",
+		}, errors.New("user not found")
+	}
+
+	return ClientMessage{
+		Username: user.Username,
+		Color:    user.Color,
+		Message:  message.Message,
+	}, nil
+}
+
 func liveChat(w http.ResponseWriter, r *http.Request) {
 	// this doesn't work without charset=utf-8 for some reason (dont ask)
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.Header().Set("Cache-Control", "no-cache")
 
-	// data := Message{
-	// 	Message:  randomString(10),
-	// 	Color:    "#D65D0E",
-	// 	Username: "vaporii",
-	// }
+	cookie, err := getCookie(w, r)
+	if err != nil {
+		http.Error(w, "don't know what went wrong", http.StatusInternalServerError)
+		return
+	}
+
+	userID, valid := verifyUserID(cookie.Value)
+	if !valid {
+		http.Error(w, "invalid username sig", http.StatusUnauthorized)
+		return
+	}
+
 	clientChan := make(chan Message, 10)
 
 	clientsMu.Lock()
-	clients[clientChan] = true
+	clients[userID] = clientChan
 	clientsMu.Unlock()
 
 	defer func() {
 		clientsMu.Lock()
-		delete(clients, clientChan)
+		delete(clients, userID)
 		clientsMu.Unlock()
 	}()
 
-	broadcast(Message{
-		Color:    "#FFFFFF",
-		Username: "admin",
-		Message:  "someone joined!",
-	})
+	sendLocalMessage(userID, "hi!! please just have basic human decency")
+	sendLocalMessage(userID, "use /nick to change your username")
 
-	fmt.Fprintf(w, "<!doctype html><html><head><link rel='stylesheet' href='/style.css' /></head><body class='transparent-bg'>\r\n")
+	fmt.Fprintf(w, `
+	<!doctype html>
+	<html class="width-full">
+		<head>
+			<meta charset="UTF-8" />
+			<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+			<link rel="stylesheet" href="/style.css" />
+		</head>
+		<body class="transparent-bg width-full">
+			<div class="flex flex-column-reverse message-div width-full break-word muted">
+				<div>`)
 	w.(http.Flusher).Flush()
 
 	tmpl, err := template.ParseFiles("./templates/message.html")
@@ -114,9 +180,15 @@ func liveChat(w http.ResponseWriter, r *http.Request) {
 	for {
 		select {
 		case msg := <-clientChan:
-			err = tmpl.Execute(w, msg)
+			clientMsg, err := transformMessage(msg)
+			if err != nil {
+				// http.Error(w, err.Error(), http.StatusBadRequest)
+				continue
+			}
+			err = tmpl.Execute(w, clientMsg)
 			if err != nil {
 				log.Fatal("error rendering template: ", err)
+				return
 			}
 			w.(http.Flusher).Flush()
 		case <-r.Context().Done():
@@ -127,28 +199,85 @@ func liveChat(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func handleChatSubmit(w http.ResponseWriter, r *http.Request) {
-	_, err := r.Cookie("username")
+func getCookie(w http.ResponseWriter, r *http.Request) (*http.Cookie, error) {
+	cookie, err := r.Cookie("user_id")
 	if err != nil {
-		username := randomString(10)
-		signed := signUsername(username)
+		userID := randomString(20)
+		signed := signUserID(userID)
 
-		http.SetCookie(w, &http.Cookie{
+		cookie = &http.Cookie{
+			Name:     "user_id",
+			Value:    signed,
+			HttpOnly: true,
+			Secure:   true,
+			Path:     "/",
+			MaxAge:   0,
+		}
+
+		http.SetCookie(w, cookie)
+	}
+
+	usernameCookie, err := r.Cookie("username")
+	if err != nil {
+		username := "guest " + randomString(4)
+		signed := signUserID(username)
+
+		usernameCookie = &http.Cookie{
 			Name:     "username",
 			Value:    signed,
 			HttpOnly: true,
 			Secure:   true,
 			Path:     "/",
 			MaxAge:   0,
-		})
-		return
-	}
-	cookie, err := r.Cookie("username")
-	if err != nil {
-		http.Error(w, "don't know what went wrong", http.StatusInternalServerError)
+		}
+
+		http.SetCookie(w, usernameCookie)
 	}
 
-	username, valid := verifyUsername(cookie.Value)
+	rawUserID, valid := verifyUserID(cookie.Value)
+	if !valid {
+		return nil, errors.New("invalid user id cookie")
+	}
+
+	username, valid := verifyUserID(usernameCookie.Value)
+	if !valid {
+		return nil, errors.New("invalid username cookie")
+	}
+
+	// excellent
+	// source of
+	// vitamin c
+	// same character length??
+
+	usersMu.Lock()
+	_, ok := users[rawUserID]
+	if !ok {
+		users[rawUserID] = &User{
+			Color:    "#AAAAAA", // default value? make random eventually
+			UserID:   rawUserID,
+			Username: username,
+		}
+	}
+	usersMu.Unlock()
+
+	return cookie, nil
+}
+
+func sendLocalMessage(userID string, message string) {
+	sendToUserID(userID, Message{
+		UserID:  "local",
+		Message: message,
+	})
+}
+
+func handleChatSubmit(w http.ResponseWriter, r *http.Request) {
+	cookie, err := getCookie(w, r)
+	if err != nil {
+		http.Error(w, "don't know what went wrong", http.StatusInternalServerError)
+		return
+	}
+
+	userID, valid := verifyUserID(cookie.Value)
 	if !valid {
 		http.Error(w, "invalid username sig", http.StatusUnauthorized)
 		return
@@ -162,14 +291,44 @@ func handleChatSubmit(w http.ResponseWriter, r *http.Request) {
 
 	message := r.FormValue("message")
 	if len(message) > 200 {
-		http.Error(w, "message too large", http.StatusBadRequest)
+		sendLocalMessage(userID, "message too large")
+		return
+	}
+
+	if len(message) == 0 {
+		sendLocalMessage(userID, "message too small")
+		return
+	}
+
+	if strings.HasPrefix(message, "/") {
+		// implement better command handling
+		args := strings.Split(message, " ")
+		if len(args) == 0 {
+			return
+		}
+
+		if args[0] == "/nick" {
+			// user := users[userID]
+			newUsername := strings.TrimSpace(strings.Join(args[1:], " "))
+			if len(newUsername) > 16 {
+				sendLocalMessage(userID, "username too long (must be 3-16 chars)")
+				return
+			}
+			if len(newUsername) < 4 {
+				sendLocalMessage(userID, "username too short (must be 3-16 chars)")
+			}
+
+			users[userID].Username = newUsername
+
+			sendLocalMessage(userID, "username set to "+newUsername)
+		}
+
 		return
 	}
 
 	broadcast(Message{
-		Message:  message,
-		Color:    "#689D6A",
-		Username: username,
+		Message: message,
+		UserID:  userID,
 	})
 }
 
@@ -183,7 +342,40 @@ func chatEndpoint(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func serveChatboxTemplate(w http.ResponseWriter) {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+	tmpl, err := template.ParseFiles("./templates/chatbox.html")
+	if err != nil {
+		log.Fatal("error loading template: ", err)
+		return
+	}
+	err = tmpl.Execute(w, nil)
+	if err != nil {
+		log.Fatal("error rendering template: ", err)
+		return
+	}
+	w.(http.Flusher).Flush()
+}
+
+func chatboxEndpoint(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+		serveChatboxTemplate(w)
+	} else if r.Method == http.MethodPost {
+		handleChatSubmit(w, r)
+		http.Redirect(w, r, "/chatbox", http.StatusSeeOther)
+	} else {
+		http.Error(w, "invalid request method", http.StatusMethodNotAllowed)
+	}
+}
+
 func main() {
+	users["local"] = &User{
+		Color:    "#ebdbb2",
+		UserID:   "local",
+		Username: "local",
+	}
+
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("error loading .env file")
@@ -199,6 +391,7 @@ func main() {
 
 	http.Handle("/", http.StripPrefix("/", fs))
 	http.HandleFunc("/chat", chatEndpoint)
+	http.HandleFunc("/chatbox", chatboxEndpoint)
 
 	port := ":8080"
 	log.Println("serving on http://localhost" + port)
