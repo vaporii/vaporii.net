@@ -12,6 +12,7 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/joho/godotenv"
@@ -28,6 +29,11 @@ var (
 )
 
 var colors = [...]string{"#CC241D", "#98971A", "#D79921", "#458588", "#B16286", "#689D6A", "#D65D0E", "#FB4934", "#B8BB26", "#FABD2F", "#83A598", "#D3869B", "#8EC07C", "#FE8019"}
+
+type Status struct {
+	Message   string
+	Timestamp string
+}
 
 type User struct {
 	Color    string
@@ -364,6 +370,35 @@ func chatboxEndpoint(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func statusEndpoint(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+	tmpl, err := template.ParseFiles("./templates/status.html")
+	if err != nil {
+		log.Fatal("error loading template: ", err)
+		return
+	}
+
+	for {
+		data := Status{
+			Message:   randomString(10),
+			Timestamp: strings.ToLower(time.Now().Format("Jan 2, 3:04 PM")),
+		}
+		err = tmpl.Execute(w, data)
+		if err != nil {
+			log.Fatal("error rendering template: ", err)
+			return
+		}
+		w.(http.Flusher).Flush()
+
+		time.Sleep(time.Second * 3)
+	}
+}
+
 func main() {
 	users["local"] = &User{
 		Color:    "#ebdbb2",
@@ -387,6 +422,7 @@ func main() {
 	http.Handle("/", http.StripPrefix("/", fs))
 	http.HandleFunc("/chat", chatEndpoint)
 	http.HandleFunc("/chatbox", chatboxEndpoint)
+	http.HandleFunc("/status", statusEndpoint)
 
 	port := ":8080"
 	log.Println("serving on http://localhost" + port)
