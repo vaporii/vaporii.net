@@ -21,6 +21,7 @@ import (
 )
 
 var secretKey []byte
+var auth string
 
 var (
 	clients   = make(map[string]chan Message) // map user ids to channel
@@ -408,9 +409,16 @@ func main() {
 
 	secret, present := os.LookupEnv("SECRET")
 	if !present {
-		log.Fatal("SECRET not present in .env")
+		log.Fatal("SECRET not present in .env, please see README.md")
+		return
 	}
 	secretKey = []byte(secret)
+
+	auth, present = os.LookupEnv("STATUS_AUTH")
+	if !present {
+		log.Fatal("STATUS_AUTH not present in .env, please see README.md")
+		return
+	}
 
 	fs := http.FileServer(http.Dir("./public"))
 
