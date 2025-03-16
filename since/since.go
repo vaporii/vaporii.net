@@ -5,8 +5,19 @@ import (
 	"time"
 )
 
+func pluralize(value int, singular, plural string) string {
+	if value == 1 {
+		return fmt.Sprintf("%d %s", value, singular)
+	}
+	return fmt.Sprintf("%d %s", value, plural)
+}
+
 func Since(t time.Time) string {
 	s := time.Since(t)
+	if s.Seconds() <= 5 {
+		return "now"
+	}
+
 	out := ""
 
 	years := int(s.Hours() / (24 * 365.25))
@@ -18,40 +29,40 @@ func Since(t time.Time) string {
 	seconds := int(s.Seconds()) % 60
 
 	if years > 0 {
-		out += fmt.Sprintf("%d years", years)
+		out += pluralize(years, "year", "years")
 	}
 	if months > 0 {
 		if out != "" {
 			out += ", "
 		}
-		out += fmt.Sprintf("%d months", months)
+		out += pluralize(months, "month", "months")
 	}
 	if weeks > 0 {
 		if out != "" {
 			out += ", "
 		}
-		out += fmt.Sprintf("%d weeks", weeks)
+		out += pluralize(weeks, "week", "weeks")
 	}
 	if days > 0 {
 		if out != "" {
 			out += ", "
 		}
-		out += fmt.Sprintf("%d days", days)
+		out += pluralize(days, "day", "days")
 	}
 	if hours > 0 {
 		if out != "" {
 			out += ", "
 		}
-		out += fmt.Sprintf("%d hours", hours)
+		out += pluralize(hours, "hour", "hours")
 	}
 	if minutes > 0 {
 		if out != "" {
 			out += ", "
 		}
-		out += fmt.Sprintf("%d minutes", minutes)
+		out += pluralize(minutes, "minute", "minutes")
 	}
 	if seconds > 0 && out == "" {
-		out = fmt.Sprintf("%d seconds", seconds)
+		out = pluralize(seconds, "second", "seconds")
 	}
 
 	return out + " ago"
