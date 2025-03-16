@@ -35,8 +35,8 @@ var colors = [...]string{"#CC241D", "#98971A", "#D79921", "#458588", "#B16286", 
 var stati = []Status{{Message: "starting up her server", Timestamp: time.Now()}}
 
 type Status struct {
-	Message   string
-	Timestamp time.Time
+	Message   string    `json:"message"`
+	Timestamp time.Time `json:"timestamp"`
 }
 
 func (s Status) ConvertTime() string {
@@ -420,6 +420,17 @@ func statusEndpoint(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func statusJSONEndpoint(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+		encoder := json.NewEncoder(w)
+		err := encoder.Encode(stati)
+		if err != nil {
+			http.Error(w, `{"message": "something went wrong"}`, http.StatusInternalServerError)
+			return
+		}
+	}
+}
+
 func main() {
 	users["local"] = &User{
 		Color:    "#ebdbb2",
@@ -451,6 +462,7 @@ func main() {
 	http.HandleFunc("/chat", chatEndpoint)
 	http.HandleFunc("/chatbox", chatboxEndpoint)
 	http.HandleFunc("/status", statusEndpoint)
+	http.HandleFunc("/status-json", statusJSONEndpoint)
 
 	port := ":8080"
 	log.Println("serving on http://localhost" + port)
