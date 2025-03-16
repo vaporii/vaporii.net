@@ -2,6 +2,7 @@ package main
 
 import (
 	cryptoRand "crypto/rand"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"html/template"
@@ -31,7 +32,7 @@ var (
 )
 
 var colors = [...]string{"#CC241D", "#98971A", "#D79921", "#458588", "#B16286", "#689D6A", "#D65D0E", "#FB4934", "#B8BB26", "#FABD2F", "#83A598", "#D3869B", "#8EC07C", "#FE8019"}
-var stati = [...]Status{{Message: "starting up her server", Timestamp: time.Now()}}
+var stati = []Status{{Message: "starting up her server", Timestamp: time.Now()}}
 
 type Status struct {
 	Message   string
@@ -57,6 +58,10 @@ type ClientMessage struct {
 	Username string
 	Color    string
 	Message  string
+}
+
+type StatusRequest struct {
+	Message string `json:"message"`
 }
 
 func randomString(length int) string {
@@ -376,23 +381,43 @@ func chatboxEndpoint(w http.ResponseWriter, r *http.Request) {
 }
 
 func statusEndpoint(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
+	if r.Method == http.MethodGet {
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+		tmpl, err := template.ParseFiles("./templates/status-page.gohtml")
+		if err != nil {
+			log.Fatal("error loading template: ", err)
+			return
+		}
+
+		err = tmpl.Execute(w, stati)
+		if err != nil {
+			log.Println("error rendering template: ", err)
+		}
+		w.(http.Flusher).Flush()
+	} else if r.Method == http.MethodPost {
+		user, pass, ok := r.BasicAuth()
+		if !ok {
+			http.Error(w, "bad authorization", http.StatusUnauthorized)
+			return
+		}
+		if user != "user" || pass != auth {
+			http.Error(w, "bad authorization", http.StatusUnauthorized)
+			return
+		}
+
+		decoder := json.NewDecoder(r.Body)
+		var t StatusRequest
+		err := decoder.Decode(&t)
+		if err != nil {
+			http.Error(w, "invalid request", http.StatusBadRequest)
+			return
+		}
+		stati = append(stati, Status{Message: t.Message, Timestamp: time.Now()})
+	} else {
 		http.Error(w, "invalid request method", http.StatusMethodNotAllowed)
 		return
 	}
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-
-	tmpl, err := template.ParseFiles("./templates/status-page.gohtml")
-	if err != nil {
-		log.Fatal("error loading template: ", err)
-		return
-	}
-
-	err = tmpl.Execute(w, stati)
-	if err != nil {
-		log.Println("error rendering template: ", err)
-	}
-	w.(http.Flusher).Flush()
 }
 
 func main() {
