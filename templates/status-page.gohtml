@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h2>vaporii is currently...</h2>
+    <div class="flex flex-column-reverse stati">
+      {{ range . }}
+      <div>
+        <h3 class="muted margin-none">{{.Message}}</h2>
+        <p class="muted margin-none">{{.ConvertTime}}</p>
+      </div>
+      {{ end }}
+    </div>
+  </body>
+</html>

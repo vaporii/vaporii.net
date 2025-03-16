@@ -319,3 +319,13 @@ button {
   overflow: auto;
   height: 150px;
 }
+
+.stati > *:last-child > h3 {
+  font-size: var(--larger-font-size);
+  color: var(--dark-text);
+}
+
+.stati > *:last-child > p {
+  font-weight: bold;
+  color: var(--muted-text);
+}
