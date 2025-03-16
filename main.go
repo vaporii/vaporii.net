@@ -176,8 +176,6 @@ func liveChat(w http.ResponseWriter, r *http.Request) {
 		case <-r.Context().Done():
 			return
 		}
-		// fmt.Fprintf(w, "<p>%s</p>\r\n", randomString(10))
-		// time.Sleep(time.Second)
 	}
 }
 

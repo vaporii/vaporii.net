@@ -40,8 +40,9 @@ layout {
   --module-size: 2px;
 
   --page-max-width: 825px;
-  --small-padding: 10px;
   --padding: 15px;
+  --small-padding: 10px;
+  --smaller-padding: 5px;
 }
 
 /* generic */
@@ -328,4 +329,9 @@ button {
 .stati > *:last-child > p {
   font-weight: bold;
   color: var(--muted-text);
+}
+
+.stati > *:last-child {
+  border-bottom: var(--module-size) solid var(--module-title);
+  padding-bottom: var(--smaller-padding);
 }
