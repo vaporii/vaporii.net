@@ -331,7 +331,12 @@ button {
   color: var(--muted-text);
 }
 
+.stati > * {
+  margin-bottom: var(--small-padding);
+}
+
 .stati > *:last-child {
   border-bottom: var(--module-size) solid var(--module-title);
   padding-bottom: var(--smaller-padding);
+  margin-bottom: var(--padding);
 }
