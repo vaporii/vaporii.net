@@ -422,6 +422,7 @@ func statusEndpoint(w http.ResponseWriter, r *http.Request) {
 
 func statusJSONEndpoint(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
+		w.Header().Add("Content-Type", "application/json")
 		encoder := json.NewEncoder(w)
 		err := encoder.Encode(stati)
 		if err != nil {
