@@ -355,6 +355,8 @@ details > summary::after {
   transform: rotate(-90deg);
   transition: transform ease-in-out 100ms;
 
+  margin-left: var(--smaller-padding);
+
   color: var(--link);
 }
 
@@ -362,14 +364,26 @@ details[open] > summary::after {
   transform: rotate(0deg);
 }
 
-.folder {
-  display: flex;
-}
-
-.folder > *:not(:first-child):not(.folder)::before {
+.l1::before {
   content: "├─ ";
 }
 
-.folder > .folder > summary::before {
-  content: "├─ ";
+.l2:not(.bottom)::before {
+  content: "│\00a0\00a0├─ ";
+}
+
+.l2.bottom::before {
+  content: "\00a0\00a0\00a0├─ ";
+}
+
+.l2.last:not(.botton)::before {
+  content: "│\00a0\00a0└─ ";
+}
+
+.l2.last.bottom::before {
+  content: "\00a0\00a0\00a0└─ ";
+}
+
+.last:before {
+  content: "└─ ";
 }
