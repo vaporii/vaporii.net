@@ -41,43 +41,61 @@
           </fieldset>
           <fieldset>
             <legend>files</legend>
-            <details class="folder root" open>
-              <summary>/vaporii.net</summary>
-
+            <input type="checkbox" id="/vaporii.net" checked disabled />
+            <label for="/vaporii.net">/vaporii.net</label>
+            <div class="folder root">
               <div class="l1"><a href="/">home</a></div>
               <div class="l1"><a href="/contact">contact</a></div>
-              <details class="folder">
-                <summary class="l1">/my-projects</summary>
 
-                <div class="l2 last">
-                  <a href="https://v8p.me" class="sym">→v8p.me</a>
+              <div class="folder-wrapper">
+                <input type="checkbox" id="/my-projects" checked />
+                <label class="l1" for="/my-projects">/my-projects</label>
+                <div class="folder">
+                  <div class="l2 last">
+                    <a
+                      href="https://v8p.me"
+                      class="sym"
+                      title="encrypt, upload, and share files"
+                      >v8p.me</a
+                    >
+                  </div>
                 </div>
-              </details>
-              <details class="folder">
-                <summary class="l1">/friends</summary>
+              </div>
 
-                <div class="l2">
-                  <a href="https://cxl.sh" class="sym">→cxl.sh</a>
+              <div class="folder-wrapper">
+                <input type="checkbox" id="/friends" checked />
+                <label class="l1" for="/friends">/friends</label>
+                <div class="folder">
+                  <div class="l2">
+                    <a href="https://cxl.sh" class="sym">cxl.sh</a>
+                  </div>
+                  <div class="l2">
+                    <a href="https://zt8.lol" class="sym">zt8.lol</a>
+                  </div>
+                  <div class="l2">
+                    <a href="https://kepterv.lol" class="sym">kepterv.lol</a>
+                  </div>
+                  <div class="l2 last">
+                    <a href="https://antonymph.lol" class="sym"
+                      >antonymph.lol</a
+                    >
+                  </div>
                 </div>
-                <div class="l2">
-                  <a href="https://zt8.lol" class="sym">→zt8.lol</a>
-                </div>
-                <div class="l2">
-                  <a href="https://kepterv.lol" class="sym">→kepterv.lol</a>
-                </div>
-                <div class="l2 last">
-                  <a href="https://antonymph.lol" class="sym">
-                    →antonymph.lol
-                  </a>
-                </div>
-              </details>
-              <details class="folder">
-                <summary class="l1 last">/silly-stuff</summary>
+              </div>
 
-                <div class="l2 bottom"><a href="/board">status-board</a></div>
-                <div class="l2 last bottom"><a href="/buttons">88x31-buttons</a></div>
-              </details>
-            </details>
+              <div class="folder-wrapper">
+                <input type="checkbox" id="/silly-stuff" checked />
+                <label class="l1 last" for="/silly-stuff">/silly-stuff</label>
+                <div class="folder">
+                  <div class="l2 bottom">
+                    <a href="/board">status-board</a>
+                  </div>
+                  <div class="l2 last bottom">
+                    <a href="/buttons">88x31-buttons</a>
+                  </div>
+                </div>
+              </div>
+            </div>
           </fieldset>
         </div>
       </fieldset>

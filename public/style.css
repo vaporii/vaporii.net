@@ -33,6 +33,8 @@ layout {
   --module-title: #665c54;
   --link: #458588;
   --link-visited: #b16286;
+  --aqua: #689d6a;
+
   --font: "JetBrains Mono Variable", monospace;
   --font-size: 16px;
   --header-font-size: 20px;
@@ -341,15 +343,13 @@ button {
   margin-bottom: var(--padding);
 }
 
-details {
+label {
+  font-weight: bold;
+  color: var(--dark-text);
   cursor: pointer;
 }
 
-details summary {
-  list-style: none;
-}
-
-details > summary::after {
+input[type="checkbox"] + label::after {
   display: inline-block;
   content: "⌄";
   transform: rotate(-90deg);
@@ -360,30 +360,67 @@ details > summary::after {
   color: var(--link);
 }
 
-details[open] > summary::after {
+input[type="checkbox"]:checked + label::after {
   transform: rotate(0deg);
 }
 
 .l1::before {
   content: "├─ ";
+  color: var(--link);
 }
 
 .l2:not(.bottom)::before {
   content: "│\00a0\00a0├─ ";
+  color: var(--link);
 }
 
 .l2.bottom::before {
   content: "\00a0\00a0\00a0├─ ";
+  color: var(--link);
 }
 
 .l2.last:not(.botton)::before {
   content: "│\00a0\00a0└─ ";
+  color: var(--link);
 }
 
 .l2.last.bottom::before {
   content: "\00a0\00a0\00a0└─ ";
+  color: var(--link);
 }
 
 .last:before {
   content: "└─ ";
+  color: var(--link);
+}
+
+input[type="checkbox"] {
+  display: none;
+}
+
+label + .folder {
+  overflow: hidden;
+  transition: height 200ms;
+}
+
+.folder-wrapper {
+  display: grid;
+  grid-template-rows: min-content 0fr;
+  transition: grid-template-rows 200ms;
+}
+
+.folder-wrapper:has(> input:checked) {
+  grid-template-rows: min-content 1fr;
+}
+
+.sym {
+  color: var(--aqua);
+}
+
+.sym:visited {
+  color: var(--aqua);
+}
+
+.sym::before {
+  content: "→ ";
 }
