@@ -340,3 +340,36 @@ button {
   padding-bottom: var(--smaller-padding);
   margin-bottom: var(--padding);
 }
+
+details {
+  cursor: pointer;
+}
+
+details summary {
+  list-style: none;
+}
+
+details > summary::after {
+  display: inline-block;
+  content: "⌄";
+  transform: rotate(-90deg);
+  transition: transform ease-in-out 100ms;
+
+  color: var(--link);
+}
+
+details[open] > summary::after {
+  transform: rotate(0deg);
+}
+
+.folder {
+  display: flex;
+}
+
+.folder > *:not(:first-child):not(.folder)::before {
+  content: "├─ ";
+}
+
+.folder > .folder > summary::before {
+  content: "├─ ";
+}
