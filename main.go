@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"server/discord"
 	"server/since"
 	"strings"
 	"sync"
@@ -24,6 +25,7 @@ import (
 
 var secretKey []byte
 var auth string
+var webhook string
 
 var (
 	clients   = make(map[string]chan Message) // map user ids to channel
@@ -447,6 +449,31 @@ func notFoundHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func messageEndpoint(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		err := r.ParseForm()
+		if err != nil {
+			http.Error(w, "invalid form", http.StatusBadRequest)
+			return
+		}
+
+		name := r.FormValue("name")
+		message := r.FormValue("message")
+
+		err = discord.SendEmbed(webhook, discord.DiscordEmbed{
+			Title:       name,
+			Description: message,
+			Color:       0x458588,
+		})
+		if err != nil {
+			log.Println("warning: failed to send message to webhook. check the URL")
+		}
+	} else {
+		http.Error(w, "invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+}
+
 func main() {
 	users["local"] = &User{
 		Color:    "#ebdbb2",
@@ -470,6 +497,12 @@ func main() {
 	if !present {
 		log.Fatal("STATUS_AUTH not present in .env, please see README.md")
 		return
+	}
+
+	webhook, present = os.LookupEnv("DISCORD_WEBHOOK_URL")
+	if !present {
+		log.Println("warning: discord webhook isn't set up, you won't receive messages from the contact page")
+		webhook = ""
 	}
 
 	dir := http.Dir("./public")
@@ -502,6 +535,7 @@ func main() {
 	http.HandleFunc("/chatbox", chatboxEndpoint)
 	http.HandleFunc("/status", statusEndpoint)
 	http.HandleFunc("/status-json", statusJSONEndpoint)
+	http.HandleFunc("/message", messageEndpoint)
 
 	port := ":8080"
 	log.Println("serving on http://localhost" + port)

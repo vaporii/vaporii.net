@@ -16,7 +16,7 @@ type DiscordWebhook struct {
 	Embeds []DiscordEmbed `json:"embeds"`
 }
 
-func sendEmbed(webhookURL string, embed DiscordWebhook) error {
+func SendEmbed(webhookURL string, embed DiscordEmbed) error {
 	jsonPayload, _ := json.Marshal(embed)
 	req, _ := http.NewRequest("POST", webhookURL, bytes.NewBuffer(jsonPayload))
 	req.Header.Set("Content-Type", "application/json")
