@@ -11,6 +11,7 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"path"
 	"server/since"
 	"strings"
 	"sync"
@@ -471,15 +472,36 @@ func main() {
 		return
 	}
 
-	fs := http.FileServer(http.Dir("./public"))
+	dir := http.Dir("./public")
+	fs := http.FileServer(dir)
 
-	http.Handle("/", http.StripPrefix("/", fs))
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		upath := r.URL.Path
+		if !strings.HasPrefix(upath, "/") {
+			upath = "/" + upath
+			r.URL.Path = upath
+		}
+		upath = path.Clean(upath)
+
+		f, err := dir.Open(upath)
+		if err != nil {
+			if os.IsNotExist(err) {
+				notFoundHandler(w, r)
+				return
+			}
+		}
+
+		if err == nil {
+			f.Close()
+		}
+
+		fs.ServeHTTP(w, r)
+	})
+	// http.Handle("/", http.StripPrefix("/", fs))
 	http.HandleFunc("/chat", chatEndpoint)
 	http.HandleFunc("/chatbox", chatboxEndpoint)
 	http.HandleFunc("/status", statusEndpoint)
 	http.HandleFunc("/status-json", statusJSONEndpoint)
-
-	http.HandleFunc("/*", notFoundHandler)
 
 	port := ":8080"
 	log.Println("serving on http://localhost" + port)
