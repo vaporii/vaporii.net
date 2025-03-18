@@ -460,13 +460,26 @@ func messageEndpoint(w http.ResponseWriter, r *http.Request) {
 		name := r.FormValue("name")
 		message := r.FormValue("message")
 
-		err = discord.SendEmbed(webhook, discord.DiscordEmbed{
-			Title:       "from: " + name,
-			Description: message,
-			Color:       0x458588,
-		})
+		if len(webhook) != 0 {
+			err = discord.SendEmbed(webhook, discord.DiscordEmbed{
+				Title:       "from: " + name,
+				Description: message,
+				Color:       0x458588,
+			})
+			if err != nil {
+				log.Println("warning: failed to send message to webhook. check the URL")
+			}
+		}
+
+		tmpl, err := template.ParseFiles("./templates/sent.html")
 		if err != nil {
-			log.Println("warning: failed to send message to webhook. check the URL")
+			log.Fatal("error loading template: ", err)
+			return
+		}
+
+		err = tmpl.Execute(w, nil)
+		if err != nil {
+			log.Println("error rendering template: ", err)
 		}
 	} else {
 		http.Error(w, "invalid request method", http.StatusMethodNotAllowed)

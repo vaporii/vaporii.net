@@ -234,6 +234,10 @@ button[type="submit"] {
   color: var(--dark-text);
 }
 
+.center-text {
+  text-align: center;
+}
+
 .border-t {
   border-top: var(--module-size) solid var(--module-border) !important;
 }
