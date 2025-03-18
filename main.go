@@ -497,7 +497,7 @@ func main() {
 
 		fs.ServeHTTP(w, r)
 	})
-	// http.Handle("/", http.StripPrefix("/", fs))
+
 	http.HandleFunc("/chat", chatEndpoint)
 	http.HandleFunc("/chatbox", chatboxEndpoint)
 	http.HandleFunc("/status", statusEndpoint)

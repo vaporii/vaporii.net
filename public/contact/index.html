@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>contact</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <fieldset class="grid-column-span-full">
+        <legend>contact</legend>
+        <h1>contact vaporii ??</h1>
+        <p>for if you relaly want to contact me..</p>
+        <hr />
+        <div class="table c2">
+          <div class="bold">discord</div>
+          <a href="https://discord.com/users/1130296369928753183">@vaporii</a>
+          <div class="bold">email</div>
+          <a href="mailto:vaporii@vaporii.net">vaporii@vaporii.net</a>
+          <div class="bold">
+            github?? (not really a contact but whateveer...)
+          </div>
+          <a href="https://github.com/vaporii">/vaporii</a>
+        </div>
+      </fieldset>
+      <fieldset class="grid-column-span-full">
+        <legend>message</legend>
+        <h1>...or, leave me a message here!!</h1>
+        <form action="/message" method="post" class="table no-gap">
+          <label for="name">your name (or username)</label>
+          <input type="text" name="name" id="name" />
+
+          <div class="spacer"></div>
+
+          <label for="message">your message</label>
+          <textarea name="message" id="message"></textarea>
+
+          <div class="spacer"></div>
+
+          <button type="submit" class="highlight border">send!!</button>
+        </form>
+      </fieldset>
+      <fieldset
+        class="position-relative overflow-hidden flex flex-column padding-none gap-small grid-column-span-full"
+      >
+        <legend class="margin-l">live chat</legend>
+        <iframe
+          src="/chat"
+          frameborder="0"
+          loading="lazy"
+          width="100%"
+          height="100%"
+          class="iframe-hack padding-lr border-box"
+        ></iframe>
+        <iframe src="/chatbox" frameborder="0" height="43px"></iframe>
+      </fieldset>
+    </div>
+  </body>
+</html>
