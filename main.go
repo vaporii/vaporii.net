@@ -432,6 +432,20 @@ func statusJSONEndpoint(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func notFoundHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotFound)
+	tmpl, err := template.ParseFiles("./templates/404.html")
+	if err != nil {
+		log.Fatal("error loading template: ", err)
+		return
+	}
+
+	err = tmpl.Execute(w, r.URL.Path)
+	if err != nil {
+		log.Println("error rendering template: ", err)
+	}
+}
+
 func main() {
 	users["local"] = &User{
 		Color:    "#ebdbb2",
@@ -464,6 +478,8 @@ func main() {
 	http.HandleFunc("/chatbox", chatboxEndpoint)
 	http.HandleFunc("/status", statusEndpoint)
 	http.HandleFunc("/status-json", statusJSONEndpoint)
+
+	http.HandleFunc("/*", notFoundHandler)
 
 	port := ":8080"
 	log.Println("serving on http://localhost" + port)
