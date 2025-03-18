@@ -461,7 +461,7 @@ func messageEndpoint(w http.ResponseWriter, r *http.Request) {
 		message := r.FormValue("message")
 
 		err = discord.SendEmbed(webhook, discord.DiscordEmbed{
-			Title:       name,
+			Title:       "from: " + name,
 			Description: message,
 			Color:       0x458588,
 		})

@@ -17,16 +17,11 @@ type DiscordWebhook struct {
 }
 
 func SendEmbed(webhookURL string, embed DiscordEmbed) error {
-	jsonPayload, _ := json.Marshal(embed)
-	req, _ := http.NewRequest("POST", webhookURL, bytes.NewBuffer(jsonPayload))
-	req.Header.Set("Content-Type", "application/json")
+	jsonPayload, _ := json.Marshal(DiscordWebhook{
+		Embeds: []DiscordEmbed{embed},
+	})
 
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
+	_, err := http.Post(webhookURL, "application/json", bytes.NewBuffer(jsonPayload))
 
-	return nil
+	return err
 }
