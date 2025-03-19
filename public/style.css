@@ -500,3 +500,13 @@ label + .folder {
 .sym::before {
   content: "→ ";
 }
+
+.snippet {
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-x: auto;
+  max-width: 100%;
+
+  font-family: inherit;
+  font-size: var(--font-size);
+}
