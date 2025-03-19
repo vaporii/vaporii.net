@@ -218,6 +218,17 @@ button[type="submit"] {
   grid-column: span 6;
 }
 
+.grid-c-span-2 {
+  grid-column: span 2;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  height: 100%;
+}
+
 .gap {
   gap: var(--padding);
 }
@@ -283,6 +294,10 @@ button[type="submit"] {
   padding: var(--padding);
 }
 
+.small-padding {
+  padding: var(--small-padding);
+}
+
 .width-min-content {
   width: min-content;
 }
@@ -344,6 +359,14 @@ button[type="submit"] {
 
 .border {
   border: var(--module-size) solid var(--muted-text);
+}
+
+.grid-row-2 {
+  grid-template-rows: min-content 1fr;
+}
+
+.very-big {
+  font-size: 25px;
 }
 
 /* other stuff */

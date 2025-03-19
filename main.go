@@ -514,7 +514,7 @@ func main() {
 
 	webhook, present = os.LookupEnv("DISCORD_WEBHOOK_URL")
 	if !present {
-		log.Println("warning: discord webhook isn't set up, you won't receive messages from the contact page")
+		log.Println("warning: discord webhook isn't set up, you won't receive messages from the contact page, please see README.md")
 		webhook = ""
 	}
 
