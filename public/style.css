@@ -79,7 +79,7 @@ fieldset {
 
   margin: 0;
   padding: var(--padding);
-  padding-top: 0;
+  padding-top: var(--smaller-padding);
 }
 
 legend {
