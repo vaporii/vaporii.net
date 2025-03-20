@@ -1,0 +1,2 @@
+- [ ] 'me' page that has more about me, maybe some pictures of like my rice or something idk
+- [ ] guest book under silly-stuff
