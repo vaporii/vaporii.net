@@ -247,7 +247,7 @@ func getUser(w http.ResponseWriter, r *http.Request) (*User, error) {
 	if err != nil {
 		user = &User{
 			Color:    colors[rand.Intn(len(colors))],
-			UserID:   "",
+			UserID:   randomString(10),
 			Username: "guest_" + randomString(4),
 		}
 

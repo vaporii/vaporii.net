@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>the thingamabob</title>
+    <link rel="stylesheet" href="/style.css" />
+    <style>
+      fieldset {
+        position: relative;
+      }
+
+      .big-spacer {
+        height: 50vh;
+      }
+
+      .ball {
+        width: 30px;
+        height: 30px;
+        background-color: black;
+        border-radius: 50%;
+        position: absolute;
+        animation: left 820ms linear infinite alternate,
+          top 658ms linear infinite alternate;
+      }
+
+      @keyframes left {
+        from {
+          left: 0%;
+        }
+
+        to {
+          left: calc(100% - 30px);
+        }
+      }
+
+      @keyframes top {
+        from {
+          top: 0%;
+        }
+
+        to {
+          top: calc(100% - 30px);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <fieldset class="grid-column-span-full">
+        <legend>the thingamabob</legend>
+        <h1>the</h1>
+        <div class="big-spacer"></div>
+        <div class="ball"></div>
+      </fieldset>
+    </div>
+  </body>
+</html>
