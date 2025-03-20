@@ -468,6 +468,7 @@ func messageEndpoint(w http.ResponseWriter, r *http.Request) {
 			})
 			if err != nil {
 				log.Println("warning: failed to send message to webhook. check the URL")
+				log.Println(err)
 			}
 		}
 
