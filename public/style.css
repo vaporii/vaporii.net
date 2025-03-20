@@ -112,6 +112,7 @@ h3 {
 
 p {
   margin: 0;
+  margin-bottom: 0.5em;
 }
 
 a {
@@ -235,6 +236,14 @@ button[type="submit"] {
 
 .gap-small {
   gap: var(--small-padding);
+}
+
+.align-middle {
+  vertical-align: middle;
+}
+
+.w-30 {
+  width: 30px;
 }
 
 .muted {

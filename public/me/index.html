@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>vaporii</title>
+    <link rel="stylesheet" href="/style.css" />
+    <style>
+      p {
+        margin-bottom: 1em;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <fieldset class="grid-column-span-full">
+        <legend>me</legend>
+        <h1>i'm vaporii!!! :3</h1>
+        <p>
+          if the paragraph on the main page wasn't enough, here's some more
+          about me!!
+        </p>
+        <p>
+          i've been programming since about age 9 (for about 8 years now).
+          because of my brother, i started playing around with javascript
+          bookmarklets (little javascript snippets that run code when clicked on
+          from a browser bookmark (drag
+          <a
+            href='javascript:document.onmousemove = (e) => { const elm = document.createElement("div"); elm.style.position = "absolute"; elm.style.top = e.clientY + "px"; elm.style.left = e.clientX + "px"; elm.style.height = "10px"; elm.style.width = "10px"; elm.style.borderRadius = "50%"; elm.style.backgroundColor = "#" + Math.floor(Math.random() * 16777215).toString(16); document.body.appendChild(elm); setTimeout(() => { elm.remove(); }, 2000); }; void(0);'
+            >this</a
+          >
+          into your bookmarks bar for an example !! (reload to get rid of the
+          effect)))
+        </p>
+        <p>
+          after that, it took a disgustingly long time to actually get a hang of
+          programming. probably at least a couple years. i moved on to mostly
+          focusing on design work, and made a couple "websites:"
+        </p>
+        <p class="muted">
+          (i was going to put some pictures of my old designs here but they were
+          so unbelievably bad i would be embarassed to claim them as my own)
+        </p>
+        <p>
+          my first <em>real</em> project was a url shortener i made in a couple
+          weeks to put on an application for an award (which i only got an
+          honorable mention for
+          <img
+            src="/images/uncannycat.webp"
+            alt=":<"
+            class="align-middle w-30"
+          />).
+        </p>
+        <p>
+          after that, i worked on version 1, 2, and 3 (current) of
+          <a href="https://v8p.me">v8p.me</a> (the old versions might be on my
+          github somewhere) and started working on this site!! :3
+        </p>
+      </fieldset>
+      <fieldset class="grid-column-span-full">
+        <legend>stuff i use</legend>
+      </fieldset>
+    </div>
+  </body>
+</html>
