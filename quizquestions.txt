@@ -42,6 +42,37 @@ Carbon
 T3. The most abundant element in Earth's atmosphere is oxygen.
 false
 
+linguistics:
+Q3. Which of the following languages is 'Ñ' used in?
+Spanish
+Turkish
+Gaelic
+French
+Japanese
+
+Q9. Which dialect of Inuktitut is spoken in Gjoa Haven?
+Nattilingmiutut
+Inuinnaqtun
+Paalliq
+Nunatsiavut
+Thingamabober
+English
+Spanish
+Nunavut
+
+T4. The French language uses specific rules to determine the gender of words.
+false
+
+Q1. What language is mainly spoken in Spain?
+Spanish
+Spainish
+English
+French
+Spainlang
+Mandarin
+
+Q1. What is Obama's last name?
+
 chemistry:
 Q2. What is the chemical symbol for potassium?
 K
@@ -65,6 +96,9 @@ America
 T2. The Nile river is the longest river on earth.
 true
 
+Q7. Where is Lake Baikal?
+Siberia
+
 history:
 Q1. Who was the first president of the United States?
 George Washington
@@ -74,6 +108,10 @@ Donald Trump
 Thomas Jefferson
 John Adams
 
+Q6. Which was synthesized first?
+Estrogen
+Testosterone
+
 Q1. Which ancient civilization built the Pyramids?
 Egyptians
 Mayans
@@ -82,12 +120,50 @@ Greeks
 Asians
 Mesopotamians
 
-Q5. Which event sparked the beginning of World War I?
+Q4. Which event sparked the beginning of World War I?
 Assassination of Archduke Franz Ferdinand
 Invasion of Poland
 The Russian Revolution
 The bombing of Pearl Harbor
 The French Revolution
+
+Q4. Which of the following was the first developed civilization?
+Mesopotamia
+Rome
+Egypt
+Greece
+Asia
+
+Q8. Who was the leader of the October Revolution?
+Vladimir Lenin
+Gavrilo Princip
+Donald Trump
+Leon Tolstoy
+
+Q9. Which month in the revolutionary calendar did Napolean overthrow the Directory in?
+Brumaire
+Nivose
+Floreal
+Fructidor
+Thermidor
+Bromarie
+
+T1. Abraham Lincoln was President during the Civil War.
+true
+
+Q9. When was the Seattle General Strike?
+1917
+1852
+2008
+1719
+2001
+
+Q0. What day was 9/11 on?
+September 11th
+October 3rd
+April 28th
+March 21st
+January 1st
 
 psychology:
 
