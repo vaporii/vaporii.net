@@ -47,6 +47,22 @@ layout {
   --smaller-padding: 5px;
 }
 
+@media screen and (max-width: 700px) {
+  :root {
+    --font-size: 14px;
+    --header-font-size: 18px;
+    --larger-font-size: 16px;
+
+    --padding: 10px;
+    --small-padding: 10px;
+    --smaller-padding: 5px;
+  }
+
+  .flex-row {
+    flex-direction: column !important;
+  }
+}
+
 /* generic */
 body {
   background-color: var(--bg);
