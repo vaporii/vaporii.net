@@ -1,0 +1,64 @@
+# questions
+
+# category:
+# Q/T0-9. Question
+# correct answer (or true/false if T)
+# choice (if Q)
+# choice (if Q)
+
+# Q - Multiple choice question
+# T - True or false question
+# 0-9 - Difficulty of question, 0 being easiest and 9 being most difficult
+
+science and biology:
+Q2. How many chromosomes are in typical human DNA?
+46
+64
+45
+47
+56
+65
+
+T4. Humans have only recently (10,000 years) began to evolve the ability to drink milk.
+true
+
+Q1. What is the powerhouse of the cell?
+Mitochondria
+DNA
+Nucleus
+Ribosomes
+chromosomes
+Protein
+Lipids
+Membrane
+
+Q6. Which molecule is the basic building block of proteins?
+Amino acid
+Nucleotide
+Monosaccharide
+Water
+Carbon
+
+T3. The most abundant element in Earth's atmosphere is oxygen.
+false
+
+chemistry:
+Q2. What is the chemical symbol for potassium?
+K
+P
+Po
+Pt
+Na
+Sn
+
+geography:
+
+history:
+
+psychology:
+
+computer science:
+T3. O(n) notation means the algorithm will always take a constant amount of time, no matter the input size.
+false
+
+mathematics:
