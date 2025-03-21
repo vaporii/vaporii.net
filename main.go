@@ -497,7 +497,7 @@ func main() {
 
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("error loading .env file")
+		log.Println("couldn't load .env file:", err)
 	}
 
 	secret, present := os.LookupEnv("SECRET")
