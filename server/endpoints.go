@@ -137,3 +137,12 @@ func chatEndpoint(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid request method", http.StatusMethodNotAllowed)
 	}
 }
+
+func imageEndpoint(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		generateImage(w, r)
+	default:
+		http.Error(w, "invalid request method", http.StatusMethodNotAllowed)
+	}
+}

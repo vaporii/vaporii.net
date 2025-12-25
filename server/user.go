@@ -4,9 +4,17 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
+	"image"
+	"image/color"
+	"image/draw"
+	"image/png"
 	"log"
 	"net/http"
+	"os"
 	"strings"
+	"time"
+
+	"github.com/fogleman/gg"
 )
 
 func broadcast(msg Message) {
@@ -180,4 +188,71 @@ func handleChatSubmit(w http.ResponseWriter, r *http.Request) {
 		Message: message,
 		UserID:  user.UserID,
 	})
+}
+
+func generateImage(w http.ResponseWriter, r *http.Request) {
+	file, err := os.Open("assets/meme.png")
+	if err != nil {
+		http.Error(w, "failed to open image", http.StatusInternalServerError)
+		return
+	}
+	defer file.Close()
+
+	img, _, err := image.Decode(file)
+	if err != nil {
+		http.Error(w, "failed to decode image", http.StatusInternalServerError)
+		return
+	}
+
+	tzParam := r.URL.Query().Get("tz")
+	loc := time.Local
+	if tzParam != "" {
+		loc, err = time.LoadLocation(tzParam)
+		if err != nil {
+			http.Error(w, "invalid timezone", http.StatusBadRequest)
+			return
+		}
+	}
+
+	now := time.Now().In(loc)
+	nextYear := time.Date(now.Year()+1, time.January, 1, 0, 0, 0, 0, loc)
+	duration := nextYear.Sub(now)
+	hours := int(duration.Hours())
+	minutes := int(duration.Minutes()) % 60
+	seconds := int(duration.Seconds()) % 60
+
+	// 804, 183
+
+	bounds := img.Bounds()
+	rgba := image.NewRGBA(bounds)
+	draw.Draw(rgba, bounds, img, bounds.Min, draw.Src)
+
+	dc := gg.NewContextForRGBA(rgba)
+	dc.SetColor(color.White)
+	dc.DrawRectangle(784, 190, 172, 100)
+	dc.Fill()
+
+	dc.DrawRectangle(431, 316, 137, 100)
+	dc.Fill()
+
+	dc.DrawRectangle(400, 450, 137, 100)
+	dc.Fill()
+
+	dc.SetRGB(0, 0, 0)
+	if err := dc.LoadFontFace("assets/Futura.ttf", 108); err != nil {
+		log.Println("failed to load font")
+	}
+	dc.DrawStringAnchored(fmt.Sprintf("%02d", hours), 790, 269, 0, 0)
+	dc.DrawStringAnchored(fmt.Sprintf("%02d", minutes), 437, 398, 0, 0)
+	dc.DrawStringAnchored(fmt.Sprintf("%02d", seconds), 401, 529, 0, 0)
+
+	w.Header().Set("Content-Type", "image/png")
+	w.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate")
+	w.Header().Set("Pragma", "no-cache")
+	w.Header().Set("Expires", "0")
+	w.Header().Set("Surrogate-Control", "no-store")
+
+	if err := png.Encode(w, rgba); err != nil {
+		log.Println("failed to encode image:", err)
+	}
 }

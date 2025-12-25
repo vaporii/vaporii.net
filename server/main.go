@@ -104,6 +104,7 @@ func main() {
 	http.HandleFunc("/status", statusEndpoint)
 	http.HandleFunc("/status-json", statusJSONEndpoint)
 	http.HandleFunc("/message", messageEndpoint)
+	http.HandleFunc("/newyears.png", imageEndpoint)
 
 	port := ":8080"
 	log.Println("serving on http://localhost" + port)
