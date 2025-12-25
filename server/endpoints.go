@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -142,6 +143,19 @@ func imageEndpoint(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		generateImage(w, r)
+	default:
+		http.Error(w, "invalid request method", http.StatusMethodNotAllowed)
+	}
+}
+
+func imageRedirectEndpoint(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		w.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate")
+		w.Header().Set("Pragma", "no-cache")
+		w.Header().Set("Expires", "0")
+		w.Header().Set("Surrogate-Control", "no-store")
+		http.Redirect(w, r, fmt.Sprintf("/newyears.png?t=%d&%s", time.Now().Unix(), r.URL.RawQuery), http.StatusFound)
 	default:
 		http.Error(w, "invalid request method", http.StatusMethodNotAllowed)
 	}
